@@ -246,6 +246,88 @@ Use this mode when:
 - Binary conditions (`if / else`)
 - List rendering (map)
 
+## Comparison with existing libraries
+
+There are a few existing React libraries that aim to improve conditional rendering.
+They are useful in certain scenarios, but they solve a **different class of problems**
+than `react-super-switch`.
+
+The goal of this library is **deterministic, exclusive rendering** with explicit
+prioritisation and fail-fast guarantees.
+
+---
+
+### `react-switch`
+
+`react-switch` provides a JSX-friendly abstraction similar to a `switch / case`
+statement.
+
+**What it’s good at:**
+
+- Cleaner syntax than inline `&&` expressions
+- Familiar `switch`-like mental model
+
+**Limitations:**
+
+- Multiple cases can render at the same time
+- No priority or ordering guarantees
+- No enforced default or fallback
+- No runtime validation
+
+`react-switch` assumes conditions are mutually exclusive, but does not enforce that
+assumption.
+
+---
+
+### `react-if`
+
+`react-if` models imperative `if / else if / else` logic in JSX.
+
+**What it’s good at:**
+
+- Simple, linear conditional flows
+- Readable for small, sequential branches
+
+**Limitations:**
+
+- Conditions must be logically chained
+- No concept of independent business rules
+- No priority system
+- Does not guarantee that only one branch renders
+
+This approach works well for simple control flow, but becomes hard to maintain when
+conditions are unrelated or derived from complex business logic.
+
+---
+
+### `react-if-vz`
+
+`react-if-vz` is conceptually closer to `react-super-switch` and attempts to introduce
+more structured conditional rendering.
+
+**Limitations:**
+
+- Largely unmaintained
+- Weak TypeScript support
+- No enforced exclusivity
+- Priority is implicit rather than guaranteed
+- No fail-fast validation
+
+---
+
+### Why `react-super-switch` exists
+
+`react-super-switch` focuses on **correctness and intent**, not just syntax:
+
+- Exactly **one** option is rendered, or an error is thrown
+- Priority is a **first-class concept**
+- Default behaviour is explicit and enforced
+- Invalid configurations fail loudly during development
+- JSX remains clean and declarative
+
+If your rendering logic depends on **multiple independent conditions** and only one
+view must ever render, `react-super-switch` is designed specifically for that use case.
+
 ## License
 
 MIT

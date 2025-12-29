@@ -2,6 +2,46 @@
   "name": "react-super-switch",
   "version": "1.0.0",
   "type": "module",
+  "description": "Deterministic conditional rendering for React. Render exactly one option from multiple independent conditions, with explicit priority and fail-fast guarantees.",
+  "author": {
+    "name": "Dimitris Damilos",
+    "url": "https://github.com/Jonur"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Jonur/react-super-switch#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jonur/react-super-switch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jonur/react-super-switch/issues"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "conditional-rendering",
+    "switch",
+    "jsx",
+    "ui",
+    "frontend",
+    "business-logic",
+    "priority",
+    "deterministic"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.cjs.js"
+    }
+  },
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.build.json && vite build",
     "typecheck": "tsc -p .",
@@ -13,9 +53,6 @@
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
   },
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "types": "dist/index.d.ts",
   "devDependencies": {
     "@types/eslint-plugin-jsx-a11y": "^6.10.1",
     "@types/node": "^25.0.3",
