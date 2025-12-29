@@ -34,42 +34,38 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
     });
 
   useEffect(() => {
-    let sortedChildren: OptionChild[] = [];
+    const collected: OptionChild[] = [];
+    let anyChildHasPriority = false;
+    let allChildrenHavePriority = true;
 
-    React.Children.map(children, (child) => {
+    React.Children.forEach(children, (child) => {
       const isValidChild = child?.type === Option;
 
-      if (isValidChild) {
-        sortedChildren.push(child);
-      } else {
+      if (!isValidChild) {
         throw Error(
           `Invalid child ${JSON.stringify(child?.type)} passed to SuperSwitch. Only <Option /> is allowed.`
         );
       }
+
+      collected.push(child);
+
+      const hasPriority = child.props.priority !== undefined;
+      if (hasPriority) {anyChildHasPriority = true;}
+      if (!hasPriority) {allChildrenHavePriority = false;}
     });
 
-    if (mode === "priority") {
-      // Validate priority usage: either ALL Option children must set `priority` or NONE
-      const priorityFlags = sortedChildren.map((c) => c.props.priority !== undefined);
-      const anyHasPriority = priorityFlags.some(Boolean);
-      const allHavePriority = priorityFlags.every(Boolean);
-
-      if (anyHasPriority && !allHavePriority) {
-        if (process.env.NODE_ENV !== "production") {
-          throw Error(
-            "Mixed `priority` usage detected: either all <Option /> children must specify `priority` or none should."
-          );
-        }
-      }
-
-      sortedChildren = sortByPriority(sortedChildren);
+    if (mode === "priority" && anyChildHasPriority && !allChildrenHavePriority) {
+      throw Error(
+        `All <Option /> children must specify a "priority" property when on "priority" mode.`
+      );
     }
 
+    // Only sort if we're in priority mode (and priorities exist). Otherwise keep FCFS order.
+    const sortedChildren = mode === "priority" ? sortByPriority(collected) : collected;
 
     const renderOption =
-      sortedChildren.find(
-        (child) => Boolean(child.props.condition) && !child.props.default
-      ) || sortedChildren.find((child) => Boolean(child.props.default));
+      sortedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ||
+      sortedChildren.find((child) => Boolean(child.props.default));
 
     setChildToRender(renderOption);
   }, [children]);
