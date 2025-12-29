@@ -1,124 +1,251 @@
 # React Super Switch
 
+A small React utility component for **deterministic, readable, and safe conditional rendering**.
+
+`react-super-switch` guarantees that **exactly one** view is rendered from a set of mutually exclusive options, even when conditions are complex, unrelated, or derived from business logic.
+
+---
+
+## Why React Super Switch exists
+
+Conditional rendering in React often starts simple and slowly becomes hard to reason about.
+
+### The common problem
+
+```tsx
+return (
+  <>
+    {caseA && <ViewA />}
+    {caseB && <ViewB />}
+    {caseC && <ViewC />}
+    {caseD && <ViewD />}
+  </>
+);
+```
+
+This pattern has several issues:
+
+- Multiple views can accidentally render at the same time
+- Ordering and priority are implicit and fragile
+- Negating conditions quickly becomes unreadable
+- Refactors are risky and hard to review
+- React Fragments are often required just to make JSX valid
+- React does not support `switch` or `if / else` directly in JSX
+
+As business logic grows, correctness and readability degrade fast.
+
+## The solution
+
+`React Super Switch` introduces a declarative, safe alternative:
+
+- Exactly one option is rendered
+- Conditions are clearly scoped
+- Priority is explicit (optional)
+- A default fallback can be defined
+
+Invalid configurations fail loudly during development
+
 ## Installation
 
-- Requirements: Node.js for development (use the project's `.nvmrc` to pick a compatible Node).
-- Recommended for development: Node 18+ or the version in `.nvmrc` (the library itself does not require a Node runtime for consumers).
-- Peer dependencies: this package declares `react` and `react-dom` as peer dependencies and supports React v17 and above. Consumers should provide React in their project; e.g. in a consumer app install React (v17+) and ReactDOM.
-
-Install dev dependencies locally for building and testing:
-
 ```bash
-# As a consumer of this libary
 npm install react-super-switch
 ```
 
-```bash
-# If you are working on the library
-npm install
-npm run typecheck
-npm run build
-```
+### Requirements
 
-## Usage (consumer):
+- React 17 or newer
+- `react` and `react-dom` are peer dependencies
+- No runtime Node.js requirement for consumers
 
-```ts
+## Basic usage
+
+```tsx
 import { SuperSwitch, Option } from "react-super-switch";
 ```
 
-The package exposes named exports only — do not import a default export.
+> The package exposes named exports only.
 
+## Example
 
-## Problems
+### Before
 
-What we are trying to solve.
-
-### Problematic component
-
-```typescript
-import React from "react";
-
-import ViewForBusinessCaseA from "./ViewForBusinessCaseA";
-import ViewForBusinessCaseB from "./ViewForBusinessCaseB";
-import ViewForBusinessCaseC from "./ViewForBusinessCaseC";
-import ViewForBusinessCaseD from "./ViewForBusinessCaseD";
-import { getClientConfig } from "../utils";
-
-type ViewSelectorProps = {
-  propA: boolean;
-  propB: boolean;
-  propC: number;
-};
-
-const ViewSelector: React.FC<ViewSelectorProps> = ({ propA, propB, propC }) => {
-  const clientConfig = getClientConfig();
-
-  const businessCaseA = propA && propB;
-  const businessCaseB = propB && propC > 3;
-  const businessRequiementC = clientConfig.setting === "TYPE_A" && propC <= 10;
-  const businessCaseD = clientConfig.setting === "TYPE_B" && propA;
-
-  return (
-    <>
-      {businessCaseA && <ViewForBusinessCaseA />}
-      {businessCaseB && <ViewForBusinessCaseB />}
-      {businessCaseC && <ViewForBusinessCaseC />}
-      {businessCaseD && <ViewForBusinessCaseD />}
-    </>
-  );
-};
+```tsx
+return (
+  <>
+    {businessCaseA && <ViewA />}
+    {businessCaseB && <ViewB />}
+    {businessCaseC && <ViewC />}
+    {businessCaseD && <ViewD />}
+  </>
+);
 ```
 
-### Issues
+### After
 
-The above component renders something different depending on different business business requirements. The values for each requirement are not necessarily relating to each other to be able to use a ternary on a value. So even in this example which does not have values after a user interraction or local state values, or API responses, it is still quite complicated to understand in a real world scenario where the variable names are going to be longer to be more descriptive. Also it is prone to bugs, as you either have to negate all options you are not rendering manually ending up with unreadable code, or you end up with this which is slightly cleaner but vulnerable to potential bugs of rendering multiple JSXs. It is difficult to organise and prioritise. Finally, it necessaties very often using React Fragments to have a valid render.
+```tsx
+return (
+  <SuperSwitch>
+    <Option condition={businessCaseA}>
+      <ViewA />
+    </Option>
 
-React does not support switch() of if-else inside the return statement.
+    <Option condition={businessCaseB}>
+      <ViewB />
+    </Option>
 
-## Solution
+    <Option condition={businessCaseC} default>
+      <ViewC />
+    </Option>
 
-This library introduces React Super Switch. Now rendering multiple options is prevented, there is a default option to be rendered even if everything is falsy, optionally, and the user can optionally add a priority to the options to avoid having to change multiple lines if they want to obscuring the intended changes on Github diff views. Also, no React fragments
+    <Option condition={businessCaseD}>
+      <ViewD />
+    </Option>
+  </SuperSwitch>
+);
+```
 
-```typescript
-import React from "react";
+**Only one** `<Option />` will ever render.
 
-import ViewForBusinessCaseA from "./ViewForBusinessCaseA";
-import ViewForBusinessCaseB from "./ViewForBusinessCaseB";
-import ViewForBusinessCaseC from "./ViewForBusinessCaseC";
-import ViewForBusinessCaseD from "./ViewForBusinessCaseD";
-import { getClientConfig } from "../utils";
+## Core concepts
 
-type ViewSelectorProps = {
-  propA: boolean;
-  propB: boolean;
-  propC: number;
-};
+### `<SuperSwitch />`
 
-const ViewSelector: React.FC<ViewSelectorProps> = ({ propA, propB, propC }) => {
-  const clientConfig = getClientConfig();
+The parent component that evaluates all `<Option />` children and decides which one to render.
 
-  const businessCaseA = propA && propB;
-  const businessCaseB = propB && propC > 3;
-  const businessRequiementC = clientConfig.setting === "TYPE_A" && propC <= 10;
-  const businessCaseD = clientConfig.setting === "TYPE_B" && propA;
+```tsx
+<SuperSwitch mode="fcfs | priority">{options}</SuperSwitch>
+```
 
-  return (
-    <SuperSwitch>
-      <Option condition={businessCaseA} priority={2}>
-       <ViewForBusinessCaseA />
-      </Option>
+| Prop   | Type                     | Default  | Description                          |
+| ------ | ------------------------ | -------- | ------------------------------------ |
+| `mode` | `"fcfs"` or `"priority"` | `"fcfs"` | Determines how options are evaluated |
 
-      <Option condition={businessCaseB} priority={1}>
-        <ViewForBusinessCaseB />
-      </Option>
+### `<Option />`
 
-      <Option condition={businessRequiementC} priority={4} default>
-        <ViewForBusinessCaseC />
-      </Option>
+Represents a single renderable branch.
 
-      <Option condition={businessCaseD} priority={3}>
-        <ViewForBusinessCaseD />
-      </Option>
-    </SuperSwitch>
-  );
-};
+```tsx
+<Option condition={boolean} priority={number} default>
+  {children}
+</Option>
+```
+
+| Prop        | Type        | Required | Description                             |
+| ----------- | ----------- | -------- | --------------------------------------- |
+| `condition` | `boolean`   | ❌       | Whether this option is eligible         |
+| `priority`  | `number`    | ❌       | Ordering hint (lower = higher priority) |
+| `default`   | `boolean`   | ❌       | Fallback option if no conditions match  |
+| `children`  | `ReactNode` | ✅       | Rendered when this option is selected   |
+
+### Evaluation modes
+
+#### 1. `fcfs` (First-Come-First-Served) — default
+
+Options are evaluated in JSX order.
+
+- The first option with a truthy condition wins
+- If no conditions match, the first default option is rendered
+- priority is ignored
+
+```tsx
+<SuperSwitch>
+  <Option condition={a}>
+    <A />
+  </Option>
+  <Option condition={b}>
+    <B />
+  </Option>
+  <Option default>
+    <Fallback />
+  </Option>
+</SuperSwitch>
+```
+
+Use this mode when **visual order already represents priority**.
+
+#### 2. `priority`
+
+Options are evaluated by explicit priority.
+
+- All `<Option />` elements must define `priority`
+- Lower numbers mean higher priority (`1` beats `2`)
+- Order in JSX does not matter
+- Default options are still supported
+
+```tsx
+<SuperSwitch mode="priority">
+  <Option condition={a} priority={2}>
+    <A />
+  </Option>
+  <Option condition={b} priority={1}>
+    <B />
+  </Option>
+  <Option default priority={99}>
+    <Fallback />
+  </Option>
+</SuperSwitch>
+```
+
+Use this mode when:
+
+- Business rules are complex
+- Priority changes frequently
+- You want cleaner diffs and safer refactors
+
+### Default option behaviour
+
+- At most one option is rendered
+- If no conditions match:
+  - the first default option is rendered
+- If no default exists, an error is thrown
+
+## Runtime validation (development safety)
+
+### Invalid children
+
+```tsx
+<SuperSwitch>
+  <div /> {/* ❌ not allowed */}
+</SuperSwitch>
+```
+
+### Missing default
+
+```tsx
+<SuperSwitch>
+  <Option condition={false}>
+    <A />
+  </Option>
+</SuperSwitch>
+```
+
+### Invalid priority usage
+
+```tsx
+<SuperSwitch mode="priority">
+  <Option condition={a} priority={1}>
+    <A />
+  </Option>
+  <Option condition={b}>
+    <B />
+  </Option>{" "}
+  {/* ❌ missing priority */}
+</SuperSwitch>
+```
+
+## When should you use this library?
+
+- When rendering logic depends on multiple independent conditions
+- When only one view must ever render
+- When priority must be explicit and reviewable
+- When you want fail-fast behaviour instead of silent bugs
+
+### When not to use it
+
+- Simple ternaries
+- Binary conditions (`if / else`)
+- List rendering (map)
+
+## License
+
+MIT

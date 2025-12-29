@@ -12,21 +12,21 @@ export type SuperSwitchProps = {
 };
 
 const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) => {
-  const [childToRender, setChildToRender] = useState<OptionChild>();
+  const [childToRender, setChildToRender] = useState<OptionChild | null>(null);
 
-  const sortByPriority = (children: OptionChild[]) =>
-    children.sort((a, b) => {
+  const sortByPriority = (options: OptionChild[]) =>
+    options.sort((a, b) => {
       const pa = a.props?.priority;
       const pb = b.props?.priority;
 
-      // If neither has a priority, preserve original order (stable sort)
+      // Neither has priority → preserve original order (stable sort)
       if (pa === undefined && pb === undefined) return 0;
 
-      // If only one has priority, the one with priority comes first
+      // One has priority → that one comes first
       if (pa === undefined) return 1;
       if (pb === undefined) return -1;
 
-      // Both have priority -> lower number wins (higher priority)
+      // Both have priority → lower number wins
       if (pa < pb) return -1;
       if (pa > pb) return 1;
 
@@ -39,42 +39,41 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
     let allChildrenHavePriority = true;
 
     React.Children.forEach(children, (child) => {
-      const isValidChild = child?.type === Option;
+      const isValidOption = child?.type === Option;
 
-      if (!isValidChild) {
-        throw Error(`Invalid child ${JSON.stringify(child?.type)} passed to SuperSwitch. Only <Option /> is allowed.`);
+      if (!isValidOption) {
+        throw new Error(`SuperSwitch only accepts <Option /> as children. Received an invalid child instead.`);
       }
 
       collected.push(child);
 
       const hasPriority = child.props.priority !== undefined;
-      if (hasPriority) {
-        anyChildHasPriority = true;
-      }
-      if (!hasPriority) {
-        allChildrenHavePriority = false;
-      }
+      if (hasPriority) anyChildHasPriority = true;
+      if (!hasPriority) allChildrenHavePriority = false;
     });
 
     if (mode === "priority" && anyChildHasPriority && !allChildrenHavePriority) {
-      throw Error(`All <Option /> children must specify a "priority" property when on "priority" mode.`);
+      throw new Error(
+        `SuperSwitch is running in "priority" mode, but not all <Option /> elements define a priority. When using priority mode, every <Option /> must specify a numeric "priority" prop.`
+      );
     }
 
-    // Only sort if we're in priority mode (and priorities exist). Otherwise keep FCFS order.
-    const sortedChildren = mode === "priority" ? sortByPriority(collected) : collected;
+    const evaluatedChildren = mode === "priority" ? sortByPriority(collected) : collected;
 
-    const renderOption =
-      sortedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ||
-      sortedChildren.find((child) => Boolean(child.props.default));
+    const optionToRender =
+      evaluatedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ??
+      evaluatedChildren.find((child) => Boolean(child.props.default));
 
-    if (!renderOption) {
-      throw Error("No conditions met for any <Option /> and no default <Option /> found.");
+    if (!optionToRender) {
+      throw new Error(
+        `SuperSwitch could not determine which option to render. No <Option /> had a truthy condition, and no default option was provided.`
+      );
     }
 
-    setChildToRender(renderOption);
+    setChildToRender(optionToRender);
   }, [children, mode]);
 
-  return childToRender || null;
+  return childToRender;
 };
 
 export default SuperSwitch;
