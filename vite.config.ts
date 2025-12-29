@@ -12,6 +12,9 @@ export default defineConfig({
       formats: ["es", "cjs"],
       fileName: (format) => (format === "es" ? "index.esm.js" : "index.cjs.js"),
     },
+    // Don't remove files written by `tsc` before the Vite build runs
+    emptyOutDir: false,
+
     rollupOptions: {
       // Don't bundle peer dependencies
       external: ["react", "react-dom"],
