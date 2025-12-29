@@ -1,5 +1,34 @@
 # React Super Switch
 
+## Installation
+
+- Requirements: Node.js for development (use the project's `.nvmrc` to pick a compatible Node).
+- Recommended for development: Node 18+ or the version in `.nvmrc` (the library itself does not require a Node runtime for consumers).
+- Peer dependencies: this package declares `react` and `react-dom` as peer dependencies and supports React v17 and above. Consumers should provide React in their project; e.g. in a consumer app install React (v17+) and ReactDOM.
+
+Install dev dependencies locally for building and testing:
+
+```bash
+# As a consumer of this libary
+npm install react-super-switch
+```
+
+```bash
+# If you are working on the library
+npm install
+npm run typecheck
+npm run build
+```
+
+## Usage (consumer):
+
+```ts
+import { SuperSwitch, Option } from "react-super-switch";
+```
+
+The package exposes named exports only — do not import a default export.
+
+
 ## Problems
 
 What we are trying to solve.
