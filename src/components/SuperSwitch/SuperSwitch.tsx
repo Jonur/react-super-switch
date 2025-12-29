@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { Children, useEffect, useState } from "react";
+import type { JSXElementConstructor, ReactElement } from "react";
 
 import Option from "../Option";
-
+import { ERROR_MESSAGES } from "./constants";
 import type { OptionProps } from "../Option";
 
-export type OptionChild = React.ReactElement<OptionProps, string | React.JSXElementConstructor<any>>;
+export type OptionChild = ReactElement<OptionProps, string | JSXElementConstructor<any>>;
 
 export type SuperSwitchProps = {
-  children: React.ReactElement<OptionProps> | React.ReactElement<OptionProps>[];
+  children: ReactElement<OptionProps> | ReactElement<OptionProps>[];
   mode?: "priority" | "fcfs";
 };
 
-const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) => {
+const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
   const [childToRender, setChildToRender] = useState<OptionChild | null>(null);
 
   const sortByPriority = (options: OptionChild[]) =>
@@ -38,24 +39,25 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
     let anyChildHasPriority = false;
     let allChildrenHavePriority = true;
 
-    React.Children.forEach(children, (child) => {
+    Children.forEach(children, (child) => {
       const isValidOption = child?.type === Option;
 
       if (!isValidOption) {
-        throw new Error(`SuperSwitch only accepts <Option /> as children. Received an invalid child instead.`);
+        throw new Error(ERROR_MESSAGES.INVALID_CHILDREN_TYPE);
       }
 
       collected.push(child);
 
       const hasPriority = child.props.priority !== undefined;
-      if (hasPriority) anyChildHasPriority = true;
-      if (!hasPriority) allChildrenHavePriority = false;
+      if (hasPriority) {
+        anyChildHasPriority = true;
+      } else {
+        allChildrenHavePriority = false;
+      }
     });
 
     if (mode === "priority" && anyChildHasPriority && !allChildrenHavePriority) {
-      throw new Error(
-        `SuperSwitch is running in "priority" mode, but not all <Option /> elements define a priority. When using priority mode, every <Option /> must specify a numeric "priority" prop.`
-      );
+      throw new Error(ERROR_MESSAGES.MISSING_PRIORITIES);
     }
 
     const evaluatedChildren = mode === "priority" ? sortByPriority(collected) : collected;
@@ -65,9 +67,7 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
       evaluatedChildren.find((child) => Boolean(child.props.default));
 
     if (!optionToRender) {
-      throw new Error(
-        `SuperSwitch could not determine which option to render. No <Option /> had a truthy condition, and no default option was provided.`
-      );
+      throw new Error(ERROR_MESSAGES.NO_OPTION_TO_RENDER);
     }
 
     setChildToRender(optionToRender);

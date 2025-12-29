@@ -1,4 +1,3 @@
-// eslint.config.js
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import prettierConfig from "eslint-config-prettier";
@@ -6,6 +5,7 @@ import importPlugin from "eslint-plugin-import";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
+import unusedImports from "eslint-plugin-unused-imports";
 
 const tsconfigRootDir = new URL(".", import.meta.url).pathname;
 
@@ -22,13 +22,14 @@ const baseRules = {
   "import/order": [
     "error",
     {
-      groups: ["builtin", "external", "internal", ["parent", "sibling", "index"], "object", "type"],
+      groups: ["builtin", "external", "internal", ["parent", "sibling", "index"], "object"],
       "newlines-between": "always",
       alphabetize: { order: "asc", caseInsensitive: true },
       pathGroups: [{ pattern: "@/**", group: "internal", position: "before" }],
       pathGroupsExcludedImportTypes: ["builtin"],
     },
   ],
+
   "import/no-duplicates": "error",
   "import/newline-after-import": "error",
 };
@@ -61,7 +62,7 @@ export default [
 
   // TS / TSX (WITH typed linting)
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}"],
     languageOptions: {
       parser: tsParser,
       ecmaVersion: "latest",
@@ -78,6 +79,7 @@ export default [
       "react-hooks": reactHooksPlugin,
       "jsx-a11y": jsxA11yPlugin,
       import: importPlugin,
+      "unused-imports": unusedImports,
     },
     settings: {
       react: { version: "detect" },
@@ -103,6 +105,41 @@ export default [
         { prefer: "type-imports", fixStyle: "separate-type-imports" },
       ],
       "@typescript-eslint/no-floating-promises": "error",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+
+  // TS config/build files (NO typed linting)
+  {
+    files: ["*.config.ts", "vite.config.ts", "vitest.config.ts", "scripts/**/*.ts"],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parserOptions: {
+        tsconfigRootDir,
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+      import: importPlugin,
+    },
+    rules: {
+      // keep these if you want consistency
+      ...baseRules,
+
+      // typed-only rules should not run here
+      "@typescript-eslint/no-floating-promises": "off",
     },
   },
 

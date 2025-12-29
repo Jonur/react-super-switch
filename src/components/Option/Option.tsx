@@ -1,4 +1,4 @@
-import React from "react";
+import type { PropsWithChildren } from "react";
 
 export type OptionProps = {
   condition?: boolean;
@@ -6,8 +6,6 @@ export type OptionProps = {
   priority?: number;
 };
 
-const Option: React.FC<React.PropsWithChildren<OptionProps>> = ({
-  children,
-}) => <>{children}</>;
+const Option = ({ children }: PropsWithChildren<OptionProps>) => <>{children}</>;
 
 export default Option;
