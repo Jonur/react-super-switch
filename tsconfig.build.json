@@ -12,8 +12,6 @@
   "include": [
     "src/index.ts",
     "src/components/SuperSwitch/**/*",
-    "src/components/Option/**/*",
-    "src/types/**/*",
-    "src/utils/**/*"
+    "src/components/Option/**/*"
   ]
 }

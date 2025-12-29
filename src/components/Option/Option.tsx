@@ -1,5 +1,10 @@
 import React from "react";
-import { OptionProps } from "../../types";
+
+export type OptionProps = {
+  condition?: boolean;
+  default?: boolean;
+  priority?: number;
+};
 
 const Option: React.FC<React.PropsWithChildren<OptionProps>> = ({
   children,
