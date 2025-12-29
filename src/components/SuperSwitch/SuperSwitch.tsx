@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import Option, { OptionProps } from "../Option";
 
-export type OptionChild = React.ReactElement<
-  OptionProps,
-  string | React.JSXElementConstructor<any>
->;
+import Option from "../Option";
+
+import type { OptionProps } from "../Option";
+
+export type OptionChild = React.ReactElement<OptionProps, string | React.JSXElementConstructor<any>>;
 
 export type SuperSwitchProps = {
   children: React.ReactElement<OptionProps> | React.ReactElement<OptionProps>[];
-  mode?: "priority" | "fcfs",
+  mode?: "priority" | "fcfs";
 };
 
 const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) => {
@@ -42,22 +42,22 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
       const isValidChild = child?.type === Option;
 
       if (!isValidChild) {
-        throw Error(
-          `Invalid child ${JSON.stringify(child?.type)} passed to SuperSwitch. Only <Option /> is allowed.`
-        );
+        throw Error(`Invalid child ${JSON.stringify(child?.type)} passed to SuperSwitch. Only <Option /> is allowed.`);
       }
 
       collected.push(child);
 
       const hasPriority = child.props.priority !== undefined;
-      if (hasPriority) {anyChildHasPriority = true;}
-      if (!hasPriority) {allChildrenHavePriority = false;}
+      if (hasPriority) {
+        anyChildHasPriority = true;
+      }
+      if (!hasPriority) {
+        allChildrenHavePriority = false;
+      }
     });
 
     if (mode === "priority" && anyChildHasPriority && !allChildrenHavePriority) {
-      throw Error(
-        `All <Option /> children must specify a "priority" property when on "priority" mode.`
-      );
+      throw Error(`All <Option /> children must specify a "priority" property when on "priority" mode.`);
     }
 
     // Only sort if we're in priority mode (and priorities exist). Otherwise keep FCFS order.
@@ -67,8 +67,12 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children, mode = "fcfs" }) =>
       sortedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ||
       sortedChildren.find((child) => Boolean(child.props.default));
 
+    if (!renderOption) {
+      throw Error("No conditions met for any <Option /> and no default <Option /> found.");
+    }
+
     setChildToRender(renderOption);
-  }, [children]);
+  }, [children, mode]);
 
   return childToRender || null;
 };
