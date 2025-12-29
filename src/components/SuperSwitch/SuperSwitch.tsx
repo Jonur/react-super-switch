@@ -7,24 +7,24 @@ const SuperSwitch: React.FC<SuperSwitchProps> = ({ children }) => {
   const [childToRender, setChildToRender] = useState<OptionChild>();
 
   useEffect(() => {
-    let filteredChildren: OptionChild[] = [];
+    let sortedChildren: OptionChild[] = [];
 
     React.Children.map(children, (child) => {
       const isValidChild = child?.type === Option;
 
       if (isValidChild) {
-        filteredChildren.push(child);
+        sortedChildren.push(child);
       } else {
         throw Error(getErrorMessage(JSON.stringify(child?.type)));
       }
     });
 
-    filteredChildren = sortByPriority(filteredChildren);
+    sortedChildren = sortByPriority(sortedChildren);
 
     const renderOption =
-      filteredChildren.find(
+      sortedChildren.find(
         (child) => Boolean(child.props.condition) && !child.props.default
-      ) || filteredChildren.find((child) => Boolean(child.props.default));
+      ) || sortedChildren.find((child) => Boolean(child.props.default));
 
     setChildToRender(renderOption);
   }, [children]);
