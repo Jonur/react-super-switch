@@ -1,6 +1,6 @@
 {
   "name": "react-super-switch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Deterministic conditional rendering for React. Render exactly one option from multiple independent conditions, with explicit priority and fail-fast guarantees.",
   "author": {
