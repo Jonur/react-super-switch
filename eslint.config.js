@@ -132,6 +132,7 @@ export default [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
+      "react-hooks": reactHooksPlugin,
       import: importPlugin,
     },
     rules: {
