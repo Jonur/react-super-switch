@@ -1,6 +1,6 @@
 {
   "name": "react-super-switch",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "description": "Deterministic conditional rendering for React. Render exactly one option from multiple independent conditions, with explicit priority and fail-fast guarantees.",
   "author": {
@@ -49,7 +49,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p .",
-    "tag": "node -e \"const v=require('./package.json').version; require('child_process').execSync(`git tag ${v} && git push origin ${v}`, { stdio: 'inherit' });\"",
+    "tag": "node -e \"const v=require('./package.json').version; const { execSync } = require('child_process'); execSync('git tag ' + v + ' && git push origin ' + v, { stdio: 'inherit' });\"",
     "test": "vitest",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
