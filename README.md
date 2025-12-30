@@ -4,7 +4,22 @@ A small React utility component for **deterministic, readable, and safe conditio
 
 `react-super-switch` guarantees that **exactly one** view is rendered from a set of mutually exclusive options, even when conditions are complex, unrelated, or derived from business logic.
 
----
+## Bundle size
+
+![npm version](https://img.shields.io/npm/v/react-super-switch)
+![gzip size](https://img.shields.io/bundlephobia/minzip/react-super-switch)
+![dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
+![react](https://img.shields.io/badge/react-17%2B-blue)
+![typescript](https://img.shields.io/badge/typescript-fully%20typed-blue)
+![tree-shakeable](https://img.shields.io/badge/tree--shakeable-yes-success)
+
+`react-super-switch` is designed to be extremely lightweight.
+
+- **ESM bundle:** ~10 KB raw / **<= 1KB minified + gzipped**
+- **CJS bundle:** ~7.2 KB raw / **<= 1KB minified + gzipped**
+- **Dependencies:** none
+
+Only the selected bundle format is included in your production build; TypeScript types and other metadata are not shipped to users.
 
 ## Why React Super Switch exists
 

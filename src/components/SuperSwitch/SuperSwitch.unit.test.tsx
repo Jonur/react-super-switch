@@ -143,5 +143,19 @@ describe("SuperSwitch", () => {
 
       expect(result).toThrowError(ERROR_MESSAGES.MISSING_PRIORITIES);
     });
+
+    it("should throw an error when no option has a priority set", () => {
+      const result = () =>
+        render(
+          <SuperSwitch mode="priority">
+            <Option condition={false}>{generateOptionDOM("first-option")}</Option>
+            <Option condition={false}>{generateOptionDOM("second-option")}</Option>
+            <Option condition={true}>{generateOptionDOM("third-option")}</Option>
+            <Option condition={true}>{generateOptionDOM("fourth-option")}</Option>
+          </SuperSwitch>
+        );
+
+      expect(result).toThrowError(ERROR_MESSAGES.MISSING_PRIORITIES);
+    });
   });
 });
