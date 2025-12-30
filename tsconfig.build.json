@@ -9,9 +9,16 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "include": [
-    "src/index.ts",
-    "src/components/SuperSwitch/**/*",
-    "src/components/Option/**/*"
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "**/*.unit.test.ts",
+    "**/*.unit.test.tsx",
+    "src/__specs__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "vite.config.*",
+    "vitest.config.*"
   ]
 }
