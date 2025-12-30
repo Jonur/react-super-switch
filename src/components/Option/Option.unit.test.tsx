@@ -7,7 +7,7 @@ describe("Option", () => {
 
   it("should render the provided child component", () => {
     const { getByRole } = render(
-      <Option>
+      <Option default>
         <MockedComponent />
       </Option>
     );

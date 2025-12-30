@@ -1,6 +1,6 @@
 {
   "name": "react-super-switch",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "Deterministic conditional rendering for React. Render exactly one option from multiple independent conditions, with explicit priority and fail-fast guarantees.",
   "author": {
@@ -43,14 +43,17 @@
   "types": "dist/index.d.ts",
   "sideEffects": false,
   "scripts": {
+    "all": "npm run typecheck && npm run lint && npm run test:coverage && npm run build",
     "build": "tsc -p tsconfig.build.json && vite build",
     "format": "prettier . --write",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p .",
+    "tag": "node -e \"const v=require('./package.json').version; require('child_process').execSync(`git tag ${v} && git push origin ${v}`, { stdio: 'inherit' });\"",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "npmv": "npm version patch --no-git-tag-version"
   },
   "peerDependencies": {
     "react": ">=17.0.0",

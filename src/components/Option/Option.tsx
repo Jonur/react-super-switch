@@ -1,11 +1,8 @@
 import type { PropsWithChildren } from "react";
 
-export type OptionProps = {
-  condition?: boolean;
-  "data-testid"?: string;
-  default?: boolean;
-  priority?: number;
-};
+import type { ConditionalOptionProps, DefaultOptionProps } from "./types";
+
+export type OptionProps = DefaultOptionProps | ConditionalOptionProps;
 
 const Option = ({ children }: PropsWithChildren<OptionProps>) => <>{children}</>;
 

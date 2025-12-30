@@ -17,7 +17,6 @@ const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
 
   useEffect(() => {
     const collected: OptionChild[] = [];
-    let anyChildHasPriority = false;
     let allChildrenHavePriority = true;
 
     Children.forEach(children, (child) => {
@@ -27,21 +26,25 @@ const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
         throw new Error(ERROR_MESSAGES.INVALID_CHILDREN_TYPE);
       }
 
+      if (Boolean(child.props.default) && "condition" in child.props) {
+        throw new Error(ERROR_MESSAGES.INVALID_OPTION_PROPS);
+      }
+
       collected.push(child);
 
-      const hasPriority = child.props.priority !== undefined;
-      if (hasPriority) {
-        anyChildHasPriority = true;
-      } else {
+      if (child.props.priority === undefined) {
         allChildrenHavePriority = false;
       }
     });
 
-    if (mode === "priority" && anyChildHasPriority && !allChildrenHavePriority) {
-      throw new Error(ERROR_MESSAGES.MISSING_PRIORITIES);
-    }
+    let evaluatedChildren = collected;
+    if (mode === "priority") {
+      if (!allChildrenHavePriority) {
+        throw new Error(ERROR_MESSAGES.MISSING_PRIORITIES);
+      }
 
-    const evaluatedChildren = mode === "priority" ? sortByPriority(collected) : collected;
+      evaluatedChildren = sortByPriority(collected);
+    }
 
     const optionToRender =
       evaluatedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ??

@@ -6,10 +6,10 @@ describe("SuperSwitch utils", () => {
   describe("sortByPriority", () => {
     it("should display the options in the order 1-2-3-4", () => {
       const options: OptionChild[] = [
-        <Option priority={4} data-testid="fourth-option" />,
-        <Option priority={2} data-testid="second-option" />,
-        <Option priority={3} data-testid="third-option" />,
-        <Option priority={1} data-testid="first-option" />,
+        <Option condition={true} priority={4} data-testid="fourth-option" />,
+        <Option condition={true} priority={2} data-testid="second-option" />,
+        <Option condition={true} priority={3} data-testid="third-option" />,
+        <Option condition={true} priority={1} data-testid="first-option" />,
       ];
 
       const result = sortByPriority(options);
@@ -23,10 +23,10 @@ describe("SuperSwitch utils", () => {
 
     it("should display the options in the order 1-4-2-3 since options 2 and 3 have not defined a priority", () => {
       const options: OptionChild[] = [
-        <Option priority={4} data-testid="fourth-option" />,
-        <Option data-testid="second-option" />,
-        <Option data-testid="third-option" />,
-        <Option priority={1} data-testid="first-option" />,
+        <Option condition={true} priority={4} data-testid="fourth-option" />,
+        <Option condition={true} data-testid="second-option" />,
+        <Option condition={true} data-testid="third-option" />,
+        <Option condition={true} priority={1} data-testid="first-option" />,
       ];
 
       const result = sortByPriority(options);
@@ -40,10 +40,10 @@ describe("SuperSwitch utils", () => {
 
     it("should display the options in the order 2-1-3-4 since options 1 and 2 have the same priority and 2 was matched first", () => {
       const options: OptionChild[] = [
-        <Option priority={4} data-testid="fourth-option" />,
-        <Option priority={1} data-testid="second-option" />,
-        <Option priority={3} data-testid="third-option" />,
-        <Option priority={1} data-testid="first-option" />,
+        <Option condition={true} priority={4} data-testid="fourth-option" />,
+        <Option condition={true} priority={1} data-testid="second-option" />,
+        <Option condition={true} priority={3} data-testid="third-option" />,
+        <Option condition={true} priority={1} data-testid="first-option" />,
       ];
 
       const result = sortByPriority(options);

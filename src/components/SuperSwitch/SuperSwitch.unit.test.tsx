@@ -12,9 +12,7 @@ describe("SuperSwitch", () => {
       const { getByTestId } = render(
         <SuperSwitch>
           <Option condition={false}>{generateOptionDOM("first-option")}</Option>
-          <Option condition={false} default>
-            {generateOptionDOM("second-option")}
-          </Option>
+          <Option default>{generateOptionDOM("second-option")}</Option>
           <Option condition={true}>{generateOptionDOM("third-option")}</Option>
           <Option condition={true}>{generateOptionDOM("fourth-option")}</Option>
         </SuperSwitch>
@@ -27,9 +25,7 @@ describe("SuperSwitch", () => {
       const { getByTestId } = render(
         <SuperSwitch>
           <Option condition={false}>{generateOptionDOM("first-option")}</Option>
-          <Option condition={false} default>
-            {generateOptionDOM("second-option")}
-          </Option>
+          <Option default>{generateOptionDOM("second-option")}</Option>
           <Option condition={false}>{generateOptionDOM("third-option")}</Option>
           <Option condition={false}>{generateOptionDOM("fourth-option")}</Option>
         </SuperSwitch>
@@ -65,6 +61,23 @@ describe("SuperSwitch", () => {
         );
 
       expect(result).toThrowError(ERROR_MESSAGES.INVALID_CHILDREN_TYPE);
+    });
+
+    it("should throw an error when there is a default option with a condition", () => {
+      const result = () =>
+        render(
+          <SuperSwitch>
+            <Option condition={false}>{generateOptionDOM("first-option")}</Option>
+            <Option condition={false}>{generateOptionDOM("second-option")}</Option>
+            {/* @ts-ignore */}
+            <Option condition={false} default>
+              {generateOptionDOM("third-option")}
+            </Option>
+            <Option condition={false}>{generateOptionDOM("fourth-option")}</Option>
+          </SuperSwitch>
+        );
+
+      expect(result).toThrowError(ERROR_MESSAGES.INVALID_OPTION_PROPS);
     });
   });
 
