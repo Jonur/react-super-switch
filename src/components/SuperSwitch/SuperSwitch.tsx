@@ -1,11 +1,11 @@
 import { Children, useEffect, useState } from "react";
-import type { JSXElementConstructor, ReactElement } from "react";
+import type { ReactElement } from "react";
 
 import Option from "../Option";
 import { ERROR_MESSAGES } from "./constants";
 import type { OptionProps } from "../Option";
-
-export type OptionChild = ReactElement<OptionProps, string | JSXElementConstructor<any>>;
+import type { OptionChild } from "./types";
+import { sortByPriority } from "./utils";
 
 export type SuperSwitchProps = {
   children: ReactElement<OptionProps> | ReactElement<OptionProps>[];
@@ -14,25 +14,6 @@ export type SuperSwitchProps = {
 
 const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
   const [childToRender, setChildToRender] = useState<OptionChild | null>(null);
-
-  const sortByPriority = (options: OptionChild[]) =>
-    options.sort((a, b) => {
-      const pa = a.props?.priority;
-      const pb = b.props?.priority;
-
-      // Neither has priority → preserve original order (stable sort)
-      if (pa === undefined && pb === undefined) return 0;
-
-      // One has priority → that one comes first
-      if (pa === undefined) return 1;
-      if (pb === undefined) return -1;
-
-      // Both have priority → lower number wins
-      if (pa < pb) return -1;
-      if (pa > pb) return 1;
-
-      return 0;
-    });
 
   useEffect(() => {
     const collected: OptionChild[] = [];

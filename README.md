@@ -130,12 +130,13 @@ Represents a single renderable branch.
 </Option>
 ```
 
-| Prop        | Type        | Required | Description                             |
-| ----------- | ----------- | -------- | --------------------------------------- |
-| `condition` | `boolean`   | ❌       | Whether this option is eligible         |
-| `priority`  | `number`    | ❌       | Ordering hint (lower = higher priority) |
-| `default`   | `boolean`   | ❌       | Fallback option if no conditions match  |
-| `children`  | `ReactNode` | ✅       | Rendered when this option is selected   |
+| Prop          | Type        | Required | Description                              |
+| ------------- | ----------- | -------- | ---------------------------------------- |
+| `condition`   | `boolean`   | ❌       | Whether this option is eligible          |
+| `priority`    | `number`    | ❌       | Ordering hint (lower = higher priority)  |
+| `data-testid` | `string`    | ❌       | A unique identifier for testing purposes |
+| `default`     | `boolean`   | ❌       | Fallback option if no conditions match   |
+| `children`    | `ReactNode` | ✅       | Rendered when this option is selected    |
 
 ### Evaluation modes
 

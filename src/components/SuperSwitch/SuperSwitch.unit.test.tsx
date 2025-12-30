@@ -51,10 +51,25 @@ describe("SuperSwitch", () => {
 
       expect(result).toThrowError(ERROR_MESSAGES.NO_OPTION_TO_RENDER);
     });
+
+    it("should throw an error when an invalid child is found", () => {
+      const result = () =>
+        render(
+          <SuperSwitch>
+            <Option condition={false}>{generateOptionDOM("first-option")}</Option>
+            <div>Evil child!</div>
+            <Option condition={false}>{generateOptionDOM("second-option")}</Option>
+            <Option condition={false}>{generateOptionDOM("third-option")}</Option>
+            <Option condition={false}>{generateOptionDOM("fourth-option")}</Option>
+          </SuperSwitch>
+        );
+
+      expect(result).toThrowError(ERROR_MESSAGES.INVALID_CHILDREN_TYPE);
+    });
   });
 
   describe("when on Priority mode", () => {
-    it("should render the the option with the highest priorty which has a truthy condition", () => {
+    it("should render the option with the highest priorty which has a truthy condition", () => {
       const { getByTestId } = render(
         <SuperSwitch mode="priority">
           <Option condition={false} priority={1}>
@@ -73,6 +88,47 @@ describe("SuperSwitch", () => {
       );
 
       expect(getByTestId("fourth-option")).toBeInTheDocument();
+    });
+
+    it("should render the first matching option when two options have the same priority", () => {
+      const { getByTestId } = render(
+        <SuperSwitch mode="priority">
+          <Option condition={false} priority={1}>
+            {generateOptionDOM("first-option")}
+          </Option>
+          <Option condition={false} priority={2}>
+            {generateOptionDOM("second-option")}
+          </Option>
+          <Option condition={true} priority={3}>
+            {generateOptionDOM("third-option")}
+          </Option>
+          <Option condition={true} priority={3}>
+            {generateOptionDOM("fourth-option")}
+          </Option>
+        </SuperSwitch>
+      );
+
+      expect(getByTestId("third-option")).toBeInTheDocument();
+    });
+
+    it("should throw an error when an option does not have a priority set", () => {
+      const result = () =>
+        render(
+          <SuperSwitch mode="priority">
+            <Option condition={false} priority={1}>
+              {generateOptionDOM("first-option")}
+            </Option>
+            <Option condition={false} priority={2}>
+              {generateOptionDOM("second-option")}
+            </Option>
+            <Option condition={true}>{generateOptionDOM("third-option")}</Option>
+            <Option condition={true} priority={3}>
+              {generateOptionDOM("fourth-option")}
+            </Option>
+          </SuperSwitch>
+        );
+
+      expect(result).toThrowError(ERROR_MESSAGES.MISSING_PRIORITIES);
     });
   });
 });
