@@ -10,9 +10,10 @@ import { sortByPriority } from "./utils";
 export type SuperSwitchProps = {
   children: ReactElement<OptionProps> | ReactElement<OptionProps>[];
   mode?: "priority" | "fcfs";
+  optional?: boolean;
 };
 
-const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
+const SuperSwitch = ({ children, mode = "fcfs", optional = false }: SuperSwitchProps) => {
   const [childToRender, setChildToRender] = useState<OptionChild | null>(null);
 
   useEffect(() => {
@@ -50,12 +51,12 @@ const SuperSwitch = ({ children, mode = "fcfs" }: SuperSwitchProps) => {
       evaluatedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ??
       evaluatedChildren.find((child) => Boolean(child.props.default));
 
-    if (!optionToRender) {
+    if (optionToRender) {
+      setChildToRender(optionToRender);
+    } else if (!optional) {
       throw new Error(ERROR_MESSAGES.NO_OPTION_TO_RENDER);
     }
-
-    setChildToRender(optionToRender);
-  }, [children, mode]);
+  }, [children, mode, optional]);
 
   return childToRender;
 };

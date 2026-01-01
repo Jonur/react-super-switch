@@ -131,9 +131,10 @@ The parent component that evaluates all `<Option />` children and decides which 
 <SuperSwitch mode="fcfs | priority">{options}</SuperSwitch>
 ```
 
-| Prop   | Type                     | Default  | Description                          |
-| ------ | ------------------------ | -------- | ------------------------------------ |
-| `mode` | `"fcfs"` or `"priority"` | `"fcfs"` | Determines how options are evaluated |
+| Prop       | Type                     | Default  | Description                                                                 |
+| ---------- | ------------------------ | -------- | --------------------------------------------------------------------------- |
+| `mode`     | `"fcfs"` or `"priority"` | `"fcfs"` | Determines how options are evaluated                                        |
+| `optional` | `boolean`                | `false`  | Allows the switch to render nothing when all `Option` conditions are falsy. |
 
 ### `<Option />`
 

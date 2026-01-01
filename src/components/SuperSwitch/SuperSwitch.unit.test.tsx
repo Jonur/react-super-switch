@@ -48,6 +48,19 @@ describe("SuperSwitch", () => {
       expect(result).toThrowError(ERROR_MESSAGES.NO_OPTION_TO_RENDER);
     });
 
+    it("should not throw an error when all option conditions are falsy, no default option is set but the switch is optional", () => {
+      const { container } = render(
+        <SuperSwitch optional>
+          <Option condition={false}>{generateOptionDOM("first-option")}</Option>
+          <Option condition={false}>{generateOptionDOM("second-option")}</Option>
+          <Option condition={false}>{generateOptionDOM("third-option")}</Option>
+          <Option condition={false}>{generateOptionDOM("fourth-option")}</Option>
+        </SuperSwitch>
+      );
+
+      expect(container.firstChild).toBeNull();
+    });
+
     it("should throw an error when an invalid child is found", () => {
       const result = () =>
         render(
