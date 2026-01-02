@@ -1,4 +1,4 @@
-import { Children, useEffect, useState } from "react";
+import { Children, useMemo } from "react";
 import type { ReactElement } from "react";
 
 import Option from "../Option";
@@ -14,9 +14,7 @@ export type SuperSwitchProps = {
 };
 
 const SuperSwitch = ({ children, mode = "fcfs", optional = false }: SuperSwitchProps) => {
-  const [childToRender, setChildToRender] = useState<OptionChild | null>(null);
-
-  useEffect(() => {
+  const optionToRender = useMemo((): OptionChild | null => {
     const collected: OptionChild[] = [];
     let allChildrenHavePriority = true;
 
@@ -38,27 +36,28 @@ const SuperSwitch = ({ children, mode = "fcfs", optional = false }: SuperSwitchP
       }
     });
 
-    let evaluatedChildren = collected;
+    let evaluated = collected;
     if (mode === "priority") {
       if (!allChildrenHavePriority) {
         throw new Error(ERROR_MESSAGES.MISSING_PRIORITIES);
       }
 
-      evaluatedChildren = sortByPriority(collected);
+      evaluated = sortByPriority([...collected]);
     }
 
-    const optionToRender =
-      evaluatedChildren.find((child) => Boolean(child.props.condition) && !child.props.default) ??
-      evaluatedChildren.find((child) => Boolean(child.props.default));
+    const match =
+      evaluated.find((c) => Boolean(c.props.condition) && !c.props.default) ??
+      evaluated.find((c) => Boolean(c.props.default));
 
-    if (optionToRender) {
-      setChildToRender(optionToRender);
-    } else if (!optional) {
+    if (!match) {
+      if (optional) return null;
       throw new Error(ERROR_MESSAGES.NO_OPTION_TO_RENDER);
     }
+
+    return match;
   }, [children, mode, optional]);
 
-  return childToRender;
+  return optionToRender;
 };
 
 export default SuperSwitch;
